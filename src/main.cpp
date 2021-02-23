@@ -107,7 +107,7 @@ void loop() {
         sendUDP();
     }
 
-    delay(10);
+    delay(5);
 }
 
 static void ImuLoop(void *arg) {
