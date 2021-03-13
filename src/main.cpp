@@ -6,14 +6,19 @@
 #include "imu/AverageCalc.h"
 #include "prefs/Settings.h"
 
+// for wifi
+#define SEND_DATA_NUM 4
+#define SSID ""
+#define PASSWORD ""
+#define CLIENT_ADDRESS "192.168.137.1"  // for send
+#define CLIENT_PORT 22222               // for send
+
+// for imu task
 #define TASK_DEFAULT_CORE_ID 1
 #define TASK_STACK_DEPTH 4096UL
 #define TASK_NAME_IMU "IMUTask"
 #define TASK_SLEEP_IMU 5  // = 1000[ms] / 200[Hz]
 #define MUTEX_DEFAULT_WAIT 1000UL
-
-// start debug memo network
-#define SENDDATANUM 4
 
 WiFiUDP udp;
 float roll, pitch, yaw;
@@ -23,7 +28,7 @@ typedef union {
     float fval;
     byte binary[4];
 } uf;
-uf s_ufdata[SENDDATANUM];
+uf s_ufdata[SEND_DATA_NUM];
 // end   debug memo network
 
 static void ImuLoop(void *arg);
@@ -64,10 +69,10 @@ void setup() {
 
     // WiFi
     M5.Mpu6886.Init();
-    Serial.println("[ESP32] Connecting to WiFi network: " + String(ssid));
+    Serial.println("[ESP32] Connecting to WiFi network: " + String(SSID));
     WiFi.disconnect(true, true);
     delay(500);
-    WiFi.begin(ssid, password);
+    WiFi.begin(SSID, PASSWORD);
     while (WiFi.status() != WL_CONNECTED) {
         delay(500);
     }
@@ -85,19 +90,14 @@ void setup() {
 }
 
 void sendUDP() {
-    udp.beginPacket(client_address, client_port);
-    for (int i = 0; i < SENDDATANUM; i++) {
+    udp.beginPacket(CLIENT_ADDRESS, CLIENT_PORT);
+    for (int i = 0; i < SEND_DATA_NUM; i++) {
         udp.write(s_ufdata[i].binary, sizeof(uf));
     }
     udp.endPacket();
 }
 
 void loop() {
-    // memo
-    // * だいぶいいとこまできた。ネット越しにデータは受け取れている
-    // * 理由は不明だが、左回転が止まらない
-    // * ↑の問題はあるが入ってきている値は正常な感じがしていて、傾けた分だけ傾く
-    // * どこかで打ち消す計算式がある？M5StickCが壊れている？
     if (gyroOffsetInstalled) {
         s_ufdata[0].fval = imuData.quat[0];
         s_ufdata[1].fval = imuData.quat[1];
