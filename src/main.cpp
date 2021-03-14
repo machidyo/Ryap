@@ -39,26 +39,20 @@ void InitM5LCD() {
     M5.Lcd.setCursor(2, 0);
 }
 
-void setup() {
-    M5.begin();
-    Serial.begin(115200);
-    InitM5LCD();
-
-    M5.Lcd.print("-- ryap --");
-
+void InitGyro() {
     float gyroOffset[3] = {0.0F};
     settingPref.begin();
     settingPref.readGyroOffset(gyroOffset);
     settingPref.finish();
 
-    // imu
     imuReader = new imu::ImuReader(M5.Imu);
     imuReader->initialize();
     if (gyroOffsetInstalled) {
         imuReader->writeGyroOffset(gyroOffset[0], gyroOffset[1], gyroOffset[2]);
     }
+}
 
-    // WiFi
+void InitWifi() {
     M5.Mpu6886.Init();
     Serial.println("[ESP32] Connecting to WiFi network: " + String(SSID));
     WiFi.disconnect(true, true);
@@ -71,11 +65,22 @@ void setup() {
     Serial.println("WiFi connected");
     Serial.println("IP address: ");
     Serial.println(WiFi.localIP());
+}
+
+void setup() {
+    M5.begin();
+    Serial.begin(115200);
+
+    InitM5LCD();
+
+    M5.Lcd.print("-- ryap --");
+
+    InitGyro();
+    InitWifi();
+
     M5.Lcd.println(WiFi.localIP());
 
-    // task
     imuDataMutex = xSemaphoreCreateMutex();
-
     xTaskCreatePinnedToCore(ImuLoop, TASK_NAME_IMU, TASK_STACK_DEPTH, NULL, 2,
                             NULL, TASK_DEFAULT_CORE_ID);
 }
