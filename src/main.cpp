@@ -20,22 +20,13 @@
 #define TASK_SLEEP_IMU 5  // = 1000[ms] / 200[Hz]
 #define MUTEX_DEFAULT_WAIT 1000UL
 
-WiFiUDP udp;
-float roll, pitch, yaw;
-
-typedef union {
-    int32_t ival;
-    float fval;
-    byte binary[4];
-} uf;
-uf s_ufdata[SEND_DATA_NUM];
-// end   debug memo network
-
 static void ImuLoop(void *arg);
 
 imu::ImuReader *imuReader;
 imu::ImuData imuData;
 static SemaphoreHandle_t imuDataMutex = NULL;
+
+WiFiUDP udp;
 
 bool gyroOffsetInstalled = true;
 imu::AverageCalcXYZ gyroAve;
@@ -92,18 +83,15 @@ void setup() {
 void sendUDP() {
     udp.beginPacket(CLIENT_ADDRESS, CLIENT_PORT);
     for (int i = 0; i < SEND_DATA_NUM; i++) {
-        udp.write(s_ufdata[i].binary, sizeof(uf));
+        byte data[sizeof(float)];
+        memcpy(data, &imuData.quat[i], sizeof(imuData.quat[i]));
+        udp.write(data, sizeof(data));
     }
     udp.endPacket();
 }
 
 void loop() {
     if (gyroOffsetInstalled) {
-        s_ufdata[0].fval = imuData.quat[0];
-        s_ufdata[1].fval = imuData.quat[1];
-        s_ufdata[2].fval = imuData.quat[2];
-        s_ufdata[3].fval = imuData.quat[3];
-
         sendUDP();
     }
 
@@ -117,8 +105,7 @@ static void ImuLoop(void *arg) {
             imuReader->update();
             imuReader->read(imuData);
             if (!gyroOffsetInstalled) {
-                if (!gyroAve.push(imuData.gyro[0], imuData.gyro[1],
-                                  imuData.gyro[2])) {
+                if (!gyroAve.push(imuData.gyro[0], imuData.gyro[1], imuData.gyro[2])) {
                     float x = gyroAve.averageX();
                     float y = gyroAve.averageY();
                     float z = gyroAve.averageZ();
