@@ -18,15 +18,15 @@
 #define TASK_STACK_DEPTH 4096UL
 #define TASK_NAME_IMU "IMUTask"
 #define TASK_NAME_WRITE_SESSION "WriteSessionTask"
-#define TASK_SLEEP_IMU 5            // = 1000[ms] / 200[Hz]
-#define TASK_SLEEP_WRITE_SESSION 40 // = 1000[ms] / 25[Hz]
+#define TASK_SLEEP_IMU 5             // = 1000[ms] / 200[Hz]
+#define TASK_SLEEP_WRITE_SESSION 40  // = 1000[ms] / 25[Hz]
 #define MUTEX_DEFAULT_WAIT 1000UL
 
 void initM5LCD();
 void initGyro();
 void initWifi();
 static void ImuLoop(void *arg);
-static void WriteSessionLoop(void* arg);
+static void WriteSessionLoop(void *arg);
 
 imu::ImuReader *imuReader;
 imu::ImuData imuData;
@@ -52,13 +52,14 @@ void setup() {
     M5.Lcd.println(WiFi.localIP());
 
     imuDataMutex = xSemaphoreCreateMutex();
-    xTaskCreatePinnedToCore(ImuLoop, TASK_NAME_IMU, TASK_STACK_DEPTH, NULL, 
-        2, NULL, TASK_DEFAULT_CORE_ID);
-    xTaskCreatePinnedToCore(WriteSessionLoop, TASK_NAME_WRITE_SESSION, TASK_STACK_DEPTH, NULL, 
-        1, NULL, TASK_DEFAULT_CORE_ID);
+    xTaskCreatePinnedToCore(ImuLoop, TASK_NAME_IMU, TASK_STACK_DEPTH, NULL, 2,
+                            NULL, TASK_DEFAULT_CORE_ID);
+    xTaskCreatePinnedToCore(WriteSessionLoop, TASK_NAME_WRITE_SESSION,
+                            TASK_STACK_DEPTH, NULL, 1, NULL,
+                            TASK_DEFAULT_CORE_ID);
 }
 
-void loop() { 
+void loop() {
     // nothing to do
 }
 
@@ -104,7 +105,8 @@ static void ImuLoop(void *arg) {
             imuReader->update();
             imuReader->read(imuData);
             if (!gyroOffsetInstalled) {
-                if (!gyroAve.push(imuData.gyro[0], imuData.gyro[1], imuData.gyro[2])) {
+                if (!gyroAve.push(imuData.gyro[0], imuData.gyro[1],
+                                  imuData.gyro[2])) {
                     float x = gyroAve.averageX();
                     float y = gyroAve.averageY();
                     float z = gyroAve.averageZ();
@@ -128,23 +130,23 @@ static void ImuLoop(void *arg) {
     }
 }
 
-static void WriteSessionLoop(void* arg) {
-  while (1) {
-    uint32_t entryTime = millis();
-    if (gyroOffsetInstalled) {
-      if (xSemaphoreTake(imuDataMutex, MUTEX_DEFAULT_WAIT) == pdTRUE) {
-            udp.beginPacket(CLIENT_ADDRESS, CLIENT_PORT);
-            for (int i = 0; i < SEND_DATA_NUM; i++) {
-                byte data[sizeof(float)];
-                memcpy(data, &imuData.quat[i], sizeof(imuData.quat[i]));
-                udp.write(data, sizeof(data));
+static void WriteSessionLoop(void *arg) {
+    while (1) {
+        uint32_t entryTime = millis();
+        if (gyroOffsetInstalled) {
+            if (xSemaphoreTake(imuDataMutex, MUTEX_DEFAULT_WAIT) == pdTRUE) {
+                udp.beginPacket(CLIENT_ADDRESS, CLIENT_PORT);
+                for (int i = 0; i < SEND_DATA_NUM; i++) {
+                    byte data[sizeof(float)];
+                    memcpy(data, &imuData.quat[i], sizeof(imuData.quat[i]));
+                    udp.write(data, sizeof(data));
+                }
+                udp.endPacket();
             }
-            udp.endPacket();
-      }
-      xSemaphoreGive(imuDataMutex);
+            xSemaphoreGive(imuDataMutex);
+        }
+        // idle
+        int32_t sleep = TASK_SLEEP_WRITE_SESSION - (millis() - entryTime);
+        vTaskDelay((sleep > 0) ? sleep : 0);
     }
-    // idle
-    int32_t sleep = TASK_SLEEP_WRITE_SESSION - (millis() - entryTime);
-    vTaskDelay((sleep > 0) ? sleep : 0);
-  }
 }
