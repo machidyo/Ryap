@@ -4,6 +4,7 @@
 
 #include "imu/ImuReader.h"
 #include "imu/AverageCalc.h"
+#include "session/SessionData.h"
 #include "prefs/Settings.h"
 
 // for wifi
@@ -131,16 +132,14 @@ static void ImuLoop(void *arg) {
 }
 
 static void WriteSessionLoop(void *arg) {
+    static session::SessionData imuSessionData(session::DataDefineImu);
     while (1) {
         uint32_t entryTime = millis();
         if (gyroOffsetInstalled) {
             if (xSemaphoreTake(imuDataMutex, MUTEX_DEFAULT_WAIT) == pdTRUE) {
                 udp.beginPacket(CLIENT_ADDRESS, CLIENT_PORT);
-                for (int i = 0; i < SEND_DATA_NUM; i++) {
-                    byte data[sizeof(float)];
-                    memcpy(data, &imuData.quat[i], sizeof(imuData.quat[i]));
-                    udp.write(data, sizeof(data));
-                }
+                imuSessionData.write((uint8_t*)&imuData, imu::ImuDataLen);
+                udp.write((uint8_t*)&imuSessionData, imuSessionData.length());
                 udp.endPacket();
             }
             xSemaphoreGive(imuDataMutex);
