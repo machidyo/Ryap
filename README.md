@@ -1,8 +1,9 @@
 # Ryap
-M5StickC のセンサー情報（精度、ジャイロ、姿勢（回転））を Wifi 経由で送信します。  
+M5StickC のセンサー情報（精度、ジャイロ、姿勢（回転））を Wifi 経由の UDP で送信します。  
 
 <img src="https://user-images.githubusercontent.com/1772636/113172205-2be91a00-9283-11eb-8870-6bb9cd06eae0.gif" width=240 />
 
+## AxisOrange ありがとうございます
 [AxisOrange](https://github.com/naninunenoy/AxisOrange) のコードを一部流用させてもらっています。
 Bluetooth 経由での接続やコードの参考はこちらを利用されるのがよいかと思います。
 
