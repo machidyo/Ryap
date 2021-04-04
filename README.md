@@ -1,33 +1,35 @@
 # Ryap
-M5StickC のセンサー情報（精度、ジャイロ、姿勢（回転））を Wifi 経由の UDP で送信します。  
+M5StickC sensor information (accuracy, gyro, attitude (rotation)) is transmitted by UDP on Wifi.
 
 <img src="https://user-images.githubusercontent.com/1772636/113172205-2be91a00-9283-11eb-8870-6bb9cd06eae0.gif" width=240 />
 
-## AxisOrange ありがとうございます
-[AxisOrange](https://github.com/naninunenoy/AxisOrange) のコードを一部流用させてもらっています。
-Bluetooth 経由での接続やコードの参考はこちらを利用されるのがよいかと思います。
+日本語は[こちら](https://github.com/machidyo/Ryap/blob/master/README.jp.md)
 
-## 利用しているツール、ライブラリ
+## Thanks to AxisOrange 
+I am using some of [AxisOrange](https://github.com/naninunenoy/AxisOrange)'s code.
+I think it is better to use this for reference of connection and code via Bluetooth.
+
+## Tools and libraries
 * [PlatformIO](https://platformio.org/)
 * [mahony](http://www.x-io.co.uk/node/8#open_source_ahrs_and_imu_algorithms)
 * [M5StickC](https://github.com/m5stack/M5StickC) : MIT License
 * [Wifi]() : esp32 Wifi support. MIT Licnese.
 * [WiFiUdp]() : Library to send/receive UDP packets. MIT Licnese.
 
-# 利用方法
-## 設定方法
+# How to use
+## Setting
 1. git clone
-2. wifi, 送信先の IP を設定（https://github.com/machidyo/Ryap/blob/master/src/main.cpp#L13-L15 を設定）
-3. M5StickC にインストール
-4. Wifi に接続できることの確認（※1）
+2. set the wifi information and the destination IP (set https://github.com/machidyo/Ryap/blob/master/src/main.cpp#L13-L15）
+3. install to M5StickC
+4. confirm to connect to Wifi (*1)
 
-※1 Wifi の接続確認の補足
-*  `--ryap--192.198.137.143` と IP が表示されることを確認します
-*  Wifi に接続できていないときは `--ryap--` だけの表示になります。SSID、パスワード等を見直してください。 
-*  IP はサンプルのため環境によって異なります。
+### *1 Wifi connection confirmation supplement
+* Make sure you see the IP as `--ryap--192.198.137.143`
+* If you cannot connect to Wifi, only `--ryap--` will be displayed. Please review the SSID, password, etc.
+* IP is a sample and depends on the environment.
 
-## 動作確認方法
-1. [RypaUnity](https://github.com/machidyo/RyapUnity) を git clone
-2. Unity で開いて実行します。
-3. M5StickC の動きに合わせて、Unity 画面上の M5StickC も動くことを確認します。
-4. 動きはあっているのだけどそもそもの向きが異なる場合、一度 M5StickC 水平にし、Aボタンを押して初期姿勢を合わせてから再度確認してみてください。動画の途中で実演しています。
+## Operation check
+1. git clone [RypaUnity] (https://github.com/machidyo/RyapUnity)
+2. Open and run in Unity.
+3. Make sure the M5StickC on the Unity screen moves as the M5StickC moves.
+4. If the movement is correct but the orientation is different in the first place, make the M5StickC horizontal once, press the A button to adjust the initial posture, and then check again. Demonstrated in the middle of the video.
