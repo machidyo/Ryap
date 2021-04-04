@@ -12,8 +12,8 @@
 #define SEND_DATA_NUM 4
 #define SSID ""
 #define PASSWORD ""
-#define CLIENT_ADDRESS "192.168.137.1"  // for send
-#define CLIENT_PORT 22222               // for send
+#define CLIENT_ADDRESS ""  // for send
+#define CLIENT_PORT 22222  // for send
 
 // tasks
 #define TASK_DEFAULT_CORE_ID 1
