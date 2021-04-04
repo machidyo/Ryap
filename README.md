@@ -7,7 +7,15 @@ M5StickC のセンサー情報（精度、ジャイロ、姿勢（回転））�
 [AxisOrange](https://github.com/naninunenoy/AxisOrange) のコードを一部流用させてもらっています。
 Bluetooth 経由での接続やコードの参考はこちらを利用されるのがよいかと思います。
 
-## 利用方法
+## 利用しているツール、ライブラリ
+* [PlatformIO](https://platformio.org/)
+* [mahony](http://www.x-io.co.uk/node/8#open_source_ahrs_and_imu_algorithms)
+* [M5StickC](https://github.com/m5stack/M5StickC) : MIT License
+* [Wifi]() : esp32 Wifi support. MIT Licnese.
+* [WiFiUdp]() : Library to send/receive UDP packets. MIT Licnese.
+
+# 利用方法
+## 設定方法
 1. git clone
 2. wifi, 送信先の IP を設定（https://github.com/machidyo/Ryap/blob/master/src/main.cpp#L13-L15 を設定）
 3. M5StickC にインストール
