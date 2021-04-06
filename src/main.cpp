@@ -22,7 +22,7 @@
 #define TASK_NAME_WRITE_SESSION "WriteSessionTask"
 #define TASK_NAME_BUTTON "ButtonTask"
 #define TASK_SLEEP_IMU 5             // = 1000[ms] / 200[Hz]
-#define TASK_SLEEP_WRITE_SESSION 40  // = 1000[ms] / 25[Hz]
+#define TASK_SLEEP_WRITE_SESSION 5   // = 1000[ms] / 200[Hz]
 #define TASK_SLEEP_BUTTON 1          // = 1000[ms] / 1000[Hz]
 #define MUTEX_DEFAULT_WAIT 1000UL
 
