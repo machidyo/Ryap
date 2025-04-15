@@ -29,7 +29,7 @@ I think it is better to use this for reference of connection and code via Blueto
 * IP is a sample and depends on the environment.
 
 ## Operation check
-1. git clone [RypaUnity] (https://github.com/machidyo/RyapUnity)
+1. git clone [RaypUnity](https://github.com/machidyo/RyapUnity)
 2. Open and run in Unity.
 3. Make sure the M5StickC on the Unity screen moves as the M5StickC moves.
 4. If the movement is correct but the orientation is different in the first place, make the M5StickC horizontal once, press the A button to adjust the initial posture, and then check again. Demonstrated in the middle of the video.
